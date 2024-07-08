@@ -1,6 +1,5 @@
 import cv2
 from pdf2image import convert_from_path
-import cv2
 import numpy as np
 import csv
 
@@ -13,9 +12,10 @@ def mouseCallBackFunction(event, x, y, flags, param):
         points.append((x, y))
 
 def main() -> None : 
-    imageAddress = input("Enter the image name you want to annotate: ")
-    fileds = "name,page,tr,tl,br,bl".split(",")
+    imageAddress = input("Enter the image name you want to annotate (without extension): ")
+    fields = "name,page,tr,tl,br,bl".split(",")
 
+    #Convert PDF to images
     images = convert_from_path(f'./documents/{imageAddress}.pdf')
     print("Reading PDF")
     cvImages = [ (np.array(image))[:, :, ::-1].copy() for image in images]
@@ -29,9 +29,11 @@ def main() -> None :
         pageNumber += 1
     cv2.waitKey(-1)
     cv2.destroyAllWindows()
-    
+
+    #Get the page number with the sticker
     pageNumber = int(input("What page is the sticker on, enter -1 if there is no sticker : "))
 
+    #If no sticker, log and exit
     if(pageNumber == -1):
         with open("database.csv", 'w') as csvfile : 
             writer = csv.DictWriter(csvfile, fieldnames=fileds)
@@ -76,6 +78,6 @@ def main() -> None :
                 "bl": points[3]
             })
     
-    print("data logged, thankyou for participating")
+    print("data logged, thank you for participating")
 
 main()
